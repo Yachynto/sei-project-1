@@ -8,6 +8,7 @@ function init() {
   const gridCells = width * width
   let virusPosition = 0
   let vaccinePosition = 94
+  let allViruses = null
 
   //* Scenario
   function createGrid() {
@@ -27,10 +28,14 @@ function init() {
   addVaccine(vaccinePosition)
 
   function addViruses(virusPosition) {
-    for (let i = virusPosition; i < 8; i++) {
+    for (let i = virusPosition; i < 7; i++) {
       cells[virusPosition + i].classList.add('virus')
+      for (let j = i; j < 40; j += 10) {
+        cells[virusPosition + j].classList.add('virus')
+        allViruses = (i, j)
+        console.log(allViruses)
+      }
     }
-    return (cells[virusPosition])
   }
   addViruses(virusPosition)
 
