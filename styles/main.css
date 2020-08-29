@@ -40,14 +40,43 @@ body {
   cursor: pointer;
 }
 
+.grid div.sneeze {
+  background-image: url('../styles/Images/water\ squirt.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
 .grid div.vaccine {
   background-image: url('../styles/Images/vaccine.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
 }
-.grid div.sneeze {
-  background-image: url('../styles/Images/water\ squirt.png');
+
+.grid div.player {
+  background-image: url('../styles/Images/disinfectant.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.grid div.playerLeft {
+  background-image: url('../styles/Images/disinfectant-left.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.grid div.playerRight {
+  background-image: url('../styles/Images/disinfectant-right.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.grid div.shoot {
+  background-image: url('../styles/Images/disinfectant-spray.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;

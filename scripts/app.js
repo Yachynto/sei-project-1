@@ -7,8 +7,10 @@ function init() {
   const cells = []
   const gridCells = width * width
   let virusPosition = 0
-  let vaccinePosition = 94
+  let vaccinePosition = 62
   let allViruses = null
+  let playerPosition = 94
+  let shotPosition = playerPosition
 
   //* Scenario
   function createGrid() {
@@ -21,7 +23,7 @@ function init() {
   }
   createGrid()
 
-  //* Spawns
+  //* Viruses Spawns and Sneeze
   function addVaccine(vaccinePosition) {
     cells[vaccinePosition].classList.add('vaccine')
   }
@@ -39,8 +41,56 @@ function init() {
   }
   addViruses(virusPosition)
 
+  function sneeze(virusPosition) {
+    
+  }
 
+  //* Player Classes
+  function addPlayer(playerPosition) {
+    cells[playerPosition].classList.add('player')
+  }
+  addPlayer(playerPosition)
 
+  function removePlayer(playerPosition) {
+    cells[playerPosition].classList.remove('player') 
+    cells[playerPosition].classList.remove('playerLeft') 
+    cells[playerPosition].classList.remove('playerRight') 
+  }
+
+  //* Shoot Function
+  function shootSpray() {
+    shotPosition = setInterval(() => {
+      playerPosition - 20
+      cells[playerPosition].classList.add('shoot')
+    }, 1000)
+  }
+
+  //* Movement and shoot case in switch
+  function movement(event) {
+
+    removePlayer(playerPosition)
+
+    const x = playerPosition % width
+    
+    switch (event.keyCode) {
+      case 68: //* Going Right
+        if (x < width - 1) playerPosition++
+        cells[playerPosition].classList.add('playerRight')
+        break
+      case 65: //* Going Left
+        if (x > 0) playerPosition--
+        cells[playerPosition].classList.add('playerLeft')
+        break
+      case 32:
+        shootSpray()
+        break
+      default:
+    }
+
+    addPlayer(playerPosition)
+  }
+
+  document.addEventListener('keydown', movement)
 
 
 
