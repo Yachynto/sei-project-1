@@ -8,7 +8,7 @@ function init() {
   const gridCells = width * width
   let virusPosition = 0
   let vaccinePosition = 62
-  let allViruses = null
+  let allViruses = []
   let playerPosition = 94
   let shotPosition = playerPosition
 
@@ -23,23 +23,40 @@ function init() {
   }
   createGrid()
 
-  //* Viruses Spawns and Sneeze
-  function addVaccine(vaccinePosition) {
-    cells[vaccinePosition].classList.add('vaccine')
-  }
-  addVaccine(vaccinePosition)
+  //* Viruses Spawns, Movement and Sneeze
+  // function addVaccine(vaccinePosition) {
+  //   cells[vaccinePosition].classList.add('vaccine')
+  // }
+  // addVaccine(vaccinePosition)
 
   function addViruses(virusPosition) {
     for (let i = virusPosition; i < 7; i++) {
       cells[virusPosition + i].classList.add('virus')
       for (let j = i; j < 40; j += 10) {
         cells[virusPosition + j].classList.add('virus')
-        allViruses = (i, j)
-        console.log(allViruses)
+        allViruses.push(j)
       }
     }
+    console.log(allViruses)
   }
   addViruses(virusPosition)
+
+
+  // function moveViruses() {
+  //   let count = 0
+  //   let timerId = setInterval(() => {
+  //     removeVirus()
+  //     allViruses = allViruses.map(virus => {
+  //       return virus + 1
+  //     })
+
+  //   }, 1000)
+  // }
+  // moveViruses()
+
+  function removeVirus() {
+    cells[virusPosition].classList.remove('virus')
+  }
 
   function sneeze(virusPosition) {
     
@@ -59,11 +76,14 @@ function init() {
 
   //* Shoot Function
   function shootSpray() {
-    shotPosition = setInterval(() => {
-      playerPosition - 20
-      cells[playerPosition].classList.add('shoot')
-    }, 1000)
+    const shotInterval = setInterval(() => {
+      cells[shotPosition].classList.remove('virus')
+      shotPosition -= 10
+      cells[shotPosition].classList.add('virus')
+    }, 200)
   }
+
+  //* Handle Shooting
 
   //* Movement and shoot case in switch
   function movement(event) {
@@ -81,7 +101,7 @@ function init() {
         if (x > 0) playerPosition--
         cells[playerPosition].classList.add('playerLeft')
         break
-      case 32:
+      case 32: //* Shoot
         shootSpray()
         break
       default:
