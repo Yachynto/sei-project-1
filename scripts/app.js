@@ -6,11 +6,14 @@ function init() {
   const width = 10
   const cells = []
   const gridCells = width * width
-  let virusPosition = 0
+  let virusPosition = null
   let vaccinePosition = 62
   let allViruses = []
   let playerPosition = 94
   let shotPosition = playerPosition
+  let timerShoot = null
+  let allShots = []
+  // let shot = null
 
   //* Scenario
   function createGrid() {
@@ -29,37 +32,67 @@ function init() {
   // }
   // addVaccine(vaccinePosition)
 
-  function addViruses(virusPosition) {
-    for (let i = virusPosition; i < 7; i++) {
-      cells[virusPosition + i].classList.add('virus')
-      for (let j = i; j < 40; j += 10) {
-        cells[virusPosition + j].classList.add('virus')
-        allViruses.push(j)
-      }
-    }
-    console.log(allViruses)
-  }
-  addViruses(virusPosition)
-
-
-  // function moveViruses() {
-  //   let count = 0
-  //   let timerId = setInterval(() => {
-  //     removeVirus()
-  //     allViruses = allViruses.map(virus => {
-  //       return virus + 1
-  //     })
-
-  //   }, 1000)
+  // function addViruses(virusPosition) {
+  //   for (let i = virusPosition; i < 7; i++) {
+  //     cells[virusPosition + i].classList.add('virus')
+  //     for (let j = i; j < 40; j += 10) {
+  //       cells[virusPosition + j].classList.add('virus')
+  //       allViruses.push(j)
+  //     }
+  //   }
+  //   moveViruses()
   // }
-  // moveViruses()
+  // addViruses(virusPosition)
 
-  function removeVirus() {
-    cells[virusPosition].classList.remove('virus')
+  function addViruses() {
+    for (let i = 0; i < 28; i++) {
+      allViruses.push(i)
+      allViruses.forEach(virus => {
+        return cells[virus].classList.add('virus')
+      })
+    }
+    console.log(allViruses.length)
   }
+  
+  
 
+  function moveViruses() {
+    let count = 0
+    let timerId = setInterval(() => {
+      removeVirus()
+      allViruses = allViruses.map(virus => {
+        return virus + 1
+      })
+      addViruses()
+    }, 1000)
+  }
+  moveViruses()
+  
+  
   function sneeze(virusPosition) {
     
+  }
+
+  //* Remove Functions
+  function removeVirus() {
+    cells[shotPosition].classList.remove('virus')
+  }
+
+  // function removeAllViruses() {
+  //   for (let i = 0; i < 28; i++) {
+  //     cells[virusPosition].classList.remove('virus')
+  //     console.log(i)
+  //   }
+  // }
+  
+  function removePlayer(playerPosition) {
+    cells[playerPosition].classList.remove('player') 
+    cells[playerPosition].classList.remove('playerLeft') 
+    cells[playerPosition].classList.remove('playerRight') 
+  }
+  
+  function removeShoot() {
+    cells[shotPosition].classList.remove('shoot')
   }
 
   //* Player Classes
@@ -68,22 +101,32 @@ function init() {
   }
   addPlayer(playerPosition)
 
-  function removePlayer(playerPosition) {
-    cells[playerPosition].classList.remove('player') 
-    cells[playerPosition].classList.remove('playerLeft') 
-    cells[playerPosition].classList.remove('playerRight') 
+  //* Shoot Functions
+  function handleShoot() {
+    if (cells[shotPosition].classList.contains('virus')) {
+      removeShoot()
+      removeVirus()
+      clearInterval(timerShoot)
+    }
+    // allShots.forEach(shot => {
+    //   allShots.push(shotPosition)
+    //   console.log(allShots)
+    // })
   }
 
-  //* Shoot Function
+
   function shootSpray() {
-    const shotInterval = setInterval(() => {
-      cells[shotPosition].classList.remove('virus')
+    shotPosition = playerPosition
+    timerShoot = setInterval(() => {
+      cells[shotPosition].classList.remove('shoot')
       shotPosition -= 10
-      cells[shotPosition].classList.add('virus')
-    }, 200)
+      cells[shotPosition].classList.add('shoot')
+      handleShoot()
+    }, 500)
   }
 
   //* Handle Shooting
+  
 
   //* Movement and shoot case in switch
   function movement(event) {
@@ -96,10 +139,12 @@ function init() {
       case 68: //* Going Right
         if (x < width - 1) playerPosition++
         cells[playerPosition].classList.add('playerRight')
+        shotPosition = playerPosition
         break
       case 65: //* Going Left
         if (x > 0) playerPosition--
         cells[playerPosition].classList.add('playerLeft')
+        shotPosition = playerPosition
         break
       case 32: //* Shoot
         shootSpray()
