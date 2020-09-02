@@ -1,10 +1,11 @@
 function init() {
   //* DOM Elements
-  const grid = document.querySelector('.grid')
+  const grid = document.querySelector('.grid') 
 
   //* Variables
   const width = 10
   const cells = []
+  const maskPosition = [71, 72, 74, 75, 77, 78]
   const gridCells = width * width
   let virusPosition = null
   let vaccinePosition = 62
@@ -23,8 +24,25 @@ function init() {
       cells.push(cell)
       grid.appendChild(cell)
     }
+    // createMasks()
+    masksDom()
   }
   createGrid()
+
+  // function createMasks() {
+  //   maskPosition.forEach(mask => {
+  //     return cells[mask].classList.add('mask')
+  //   })
+  // }
+
+  function masksDom() {
+    const firstMask = document.getElementById('71')
+    const secondMask = document.getElementById('72')
+    const thirdMask = document.getElementById('74')
+    const fourthMask = document.getElementById('75')
+    const fifthMask = document.getElementById('77')
+    const sixthMask = document.getElementById('78')
+  }
 
   //* Viruses Spawns, Movement and Sneeze
   // function addVaccine(vaccinePosition) {
@@ -51,8 +69,8 @@ function init() {
         return cells[virus].classList.add('virus')
       })
     }
-    console.log(allViruses.length)
   }
+  addViruses()
   
   
 
@@ -66,7 +84,7 @@ function init() {
       addViruses()
     }, 1000)
   }
-  moveViruses()
+  // moveViruses()
   
   
   function sneeze(virusPosition) {
@@ -107,6 +125,9 @@ function init() {
       removeShoot()
       removeVirus()
       clearInterval(timerShoot)
+    } else if (shotPosition % width === 0) {
+      removeShoot()
+      clearInterval(timerShoot)
     }
     // allShots.forEach(shot => {
     //   allShots.push(shotPosition)
@@ -122,7 +143,7 @@ function init() {
       shotPosition -= 10
       cells[shotPosition].classList.add('shoot')
       handleShoot()
-    }, 500)
+    }, 150)
   }
 
   //* Handle Shooting

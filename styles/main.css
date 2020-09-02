@@ -38,7 +38,6 @@ body {
   background-image: url('../styles/Images/covid.png');
   background-repeat: no-repeat;
   background-size: contain;
-  cursor: pointer;
 }
 
 .grid div.sneeze {
@@ -78,6 +77,13 @@ body {
 
 .grid div.shoot {
   background-image: url('../styles/Images/disinfectant-spray.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.grid div.mask {
+  background-image: url('../styles/Images/stretched\ mask.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
