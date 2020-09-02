@@ -29,6 +29,7 @@ body {
   background-repeat: no-repeat;
   background-size: contain; */
   border: 1px solid white;
+  /* background-color: white; */
   flex-grow: 1;
   height: 55px;
   width: 55px;
@@ -82,7 +83,7 @@ body {
   background-size: contain;
 }
 
-.grid div.mask {
+.mask {
   background-image: url('../styles/Images/stretched\ mask.png');
   background-position: center;
   background-repeat: no-repeat;
