@@ -10,6 +10,8 @@ body {
   display: flex;
   height: 90vh;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
 }
 
@@ -21,7 +23,6 @@ body {
   justify-content: center;
   height: 600px;
   width: 600px;
-  margin-top: 50px;
 }
 .grid div {
   /* background-image: url('../styles/Images/covid.png');
@@ -83,9 +84,32 @@ body {
   background-size: contain;
 }
 
-.mask {
-  background-image: url('../styles/Images/stretched\ mask.png');
+.leftMask {
+  background-image: url('../styles/Images/leftHalf.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+.rightMask {
+  background-image: url('../styles/Images/rightHalf.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.startButton {
+  background-color: tomato;
+  margin-top: 50px;
+}
+
+.grid-container p {
+  background-color: lightgray;
+  margin-top: -200px;
+  font-size: 20px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.scoreText {
+  
 }
