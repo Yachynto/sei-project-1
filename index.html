@@ -9,10 +9,16 @@
 </head>
 <body>
   <h1>Covid-19 Invaders</h1>
+  <p class="pContainer">Current score: <span class="scoreText">0</span></p>
   <div class="grid-container">
-    <p>Current score: <span class="scoreText">0</span></p>
     <div class="grid"></div>
     <button class="startButton">Start Game</button>
+    <div id="endGameDiv">
+      <div id="gameOverPic"></div>
+      <div id="lostText"></div>
+    </div>
   </div>
+  <audio id="sprayAudio"></audio>
+  <audio id="endGameAudio"></audio>
 </body>
 </html>

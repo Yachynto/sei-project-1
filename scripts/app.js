@@ -4,12 +4,16 @@ function init() {
   const grid = document.querySelector('.grid')
   const startButton = document.querySelector('.startButton')
   const scoreText = document.querySelector('.scoreText')
+  const sprayAudio = document.querySelector('#sprayAudio')
+  const endGameAudio = document.querySelector('#endGameAudio')
+  const endGameDiv = document.querySelector('#endGameDiv')
+  const lostText = document.querySelector('#lostText')
 
   //* Variables
   const width = 10
   const cells = []
-  const maskLeftHalf = [71, 74, 77]
-  const maskRightHalf = [ 72, 75, 78]
+  const maskLeftHalf = [72, 76]
+  const maskRightHalf = [ 73, 77]
   const gridCells = width * width
   const virusPosition = null
   const vaccinePosition = 62
@@ -112,7 +116,11 @@ function init() {
     const y = Math.ceil(finalVirusIndex / width)
     if (finalVirusIndex === 89) {
       console.log(y, 'y position')
-      clearInterval(virusId)  //* If viruses hit bottom, end game
+      playEndGameAudio()
+      clearInterval(virusId)  //* If viruses hit bottom, END GAME!
+      endGameSheet()
+      startButtonDisappear()
+      // window.alert(`You lost! Your highest score is ${score} points!`)
     } else if ((x === width - 1 && movingRight) || (x === 0  && !movingRight)) { 
       allViruses = allViruses.map(virus => {
         return {
@@ -227,7 +235,6 @@ function init() {
       allViruses = allViruses.filter(virus => { //* Remove the object from array
         return virus.isAlive === true
       })
-      //! use the splice to remove the object from allViruses
       console.log('hitVirus', hitVirus)
       hitVirus.isAlive = !hitVirus.isAlive
       cells[shotPosition].classList.remove('virus')
@@ -235,7 +242,7 @@ function init() {
       console.log(allViruses, 'hidden array')
       clearInterval(timerShoot) // * clear the interval
       return
-    } else if (shotPosition <= 9 && !cells[shotPosition].classList.contains('virus')) {
+    } else if (shotPosition < 9) {
       removeSpray()
       clearInterval(timerShoot)
     }
@@ -251,7 +258,7 @@ function init() {
     }, 150)
   }
 
-  //* Movement and shoot case in switch
+  //* Player Movement and shoot case in switch
   function movement(event) {
     removePlayer(playerPosition)
     const x = playerPosition % width
@@ -268,16 +275,29 @@ function init() {
         break
       case 32: //* Shoot
         shootSpray()
-        // startGame()
-        //! Start moving them with spacebar 
+        startGame()
+        playSpray()
+        //! Start game with spacebar 
         break
       default:
     }
     addPlayer(playerPosition)
   }
   
+  //* Sounds
+  function playSpray() {
+    sprayAudio.src = 'styles/Sounds/Spray Sound.mp3'
+    sprayAudio.play()
+    console.log('Playing')
+  }
+
+  function playEndGameAudio() {
+    endGameAudio.src = 'styles/Sounds/End Game Cough.mp3'
+    endGameAudio.play()
+    console.log('Playing endGame')
+  }
   
-  //* Start Game, Victory and Loose
+  //* Start Game, Victory and End Game stuff
   function startGame() {
     moveVirusesTimer()
   }
@@ -287,8 +307,16 @@ function init() {
     window.alert('You Won')
   }
   
+  //! End Game inside moveViruses()
   
+  function endGameSheet() {
+    endGameDiv.classList.add('endGameDiv')
+    lostText.innerHTML = `You lost! Your highest score is ${score} points!`
+  }
   
+  function startButtonDisappear() {
+    startButton.style.display = 'none'
+  }
   
   
   
