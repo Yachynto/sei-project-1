@@ -8,6 +8,8 @@ function init() {
   const endGameAudio = document.querySelector('#endGameAudio')
   const endGameDiv = document.querySelector('#endGameDiv')
   const lostText = document.querySelector('#lostText')
+  const baseSound = document.querySelector('#baseSound')
+  const victoryAudio = document.querySelector('#victoryAudio')
 
   //* Variables
   const width = 10
@@ -24,6 +26,7 @@ function init() {
   const sneezePosition = virusPosition
   let movingRight = true
   const allShots = []
+  let playerDirection
   let virusId
   let timerShoot
   let allViruses = [
@@ -120,6 +123,7 @@ function init() {
       clearInterval(virusId)  //* If viruses hit bottom, END GAME!
       endGameSheet()
       startButtonDisappear()
+      baseSound.pause()
       // window.alert(`You lost! Your highest score is ${score} points!`)
     } else if ((x === width - 1 && movingRight) || (x === 0  && !movingRight)) { 
       allViruses = allViruses.map(virus => {
@@ -149,7 +153,7 @@ function init() {
       removeViruses()
       moveViruses()
       addViruses()
-    }, 200)
+    }, 750)
   }
   
   // function sneeze() {
@@ -185,10 +189,22 @@ function init() {
   // }
 
   //* Player Classes
-  function addPlayer(playerPosition) {
+  function addStartPlayer(playerPosition) {
     cells[playerPosition].classList.add('player')
   }
-  addPlayer(playerPosition)
+  addStartPlayer(playerPosition)
+
+  function addPlayer(playerPosition) { //? Tried to keep the class of player not changing while shooting
+    if (playerDirection === 'right') {
+      return cells[playerPosition].classList.add('playerRight')
+    } else if (playerDirection === 'left') {
+      return cells[playerPosition].classList.add('playerLeft')
+    }
+    //   console.log("It's already showing left, do nothing")
+    // } else if (cells[playerPosition].classList.contains('playerRight')) {
+    //   console.log('showing right, do nothing')
+    // }
+  }
 
   //* Shoot Functions
   // function handleShoot() {
@@ -255,7 +271,7 @@ function init() {
       removeSpray()
       shotPosition -= 10
       addSpray()
-    }, 150)
+    }, 100)
   }
 
   //* Player Movement and shoot case in switch
@@ -266,18 +282,20 @@ function init() {
       case 68: //* Going Right
         if (x < width - 1) playerPosition++
         cells[playerPosition].classList.add('playerRight')
+        playerDirection = 'right'
         shotPosition = playerPosition
         break
       case 65: //* Going Left
         if (x > 0) playerPosition--
         cells[playerPosition].classList.add('playerLeft')
+        playerDirection = 'left'
         shotPosition = playerPosition
         break
       case 32: //* Shoot
         shootSpray()
-        startGame()
         playSpray()
-        //! Start game with spacebar 
+        addPlayer(playerPosition)
+        //? Start game with spacebar not possible, due to loop baseSound
         break
       default:
     }
@@ -296,15 +314,34 @@ function init() {
     endGameAudio.play()
     console.log('Playing endGame')
   }
+
+  function playBase() {
+    baseSound.src = 'styles/Sounds/One Minute To Midnight.mp3'
+    baseSound.volume = 0.1
+    baseSound.play()
+    console.log('Playing Base')
+  }
+
+  function playVictory() {
+    victoryAudio.src = 'styles/Sounds/victory sound.wav'
+    victoryAudio.play()
+    console.log('playing victory')
+  }
   
   //* Start Game, Victory and End Game stuff
   function startGame() {
     moveVirusesTimer()
+    playBase()
   }
   
   function winGame() {
     clearInterval(virusId)
-    window.alert('You Won')
+    endGameDiv.classList.add('endGameDiv')
+    lostText.innerHTML = `Well Done sanitizing!Your highest score is ${score} points!`
+    winGameSheet()
+    baseSound.pause()
+    playVictory()
+    // window.alert('You Won')
   }
   
   //! End Game inside moveViruses()
@@ -312,6 +349,14 @@ function init() {
   function endGameSheet() {
     endGameDiv.classList.add('endGameDiv')
     lostText.innerHTML = `You lost! Your highest score is ${score} points!`
+    document.querySelector('#youCured').removeAttribute('id')
+    document.querySelector('#the').removeAttribute('id')
+    document.querySelector('#pandemic').removeAttribute('id')
+  }
+
+  function winGameSheet() {
+    endGameDiv.classList.add('endGameDiv')
+    document.querySelector('#gameOverPic').removeAttribute('id')
   }
   
   function startButtonDisappear() {
