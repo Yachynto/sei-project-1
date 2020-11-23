@@ -20,7 +20,7 @@ function init() {
   const virusPosition = null
   const vaccinePosition = 62
   // let allViruses = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26]
-  let score = null
+  let score = 0
   let playerPosition = 94
   let shotPosition 
   const sneezePosition = virusPosition
@@ -266,12 +266,15 @@ function init() {
   }
   
   function shootSpray() {
+    clearInterval(timerShoot)
     shotPosition = playerPosition
     timerShoot = setInterval(() => {
       removeSpray()
       shotPosition -= 10
       addSpray()
+      console.log('Shooting timer updates')
     }, 100)
+    console.log('Shot start')
   }
 
   //* Player Movement and shoot case in switch
@@ -291,7 +294,7 @@ function init() {
         playerDirection = 'left'
         shotPosition = playerPosition
         break
-      case 32: //* Shoot
+      case 87: //* Shoot with W
         shootSpray()
         playSpray()
         addPlayer(playerPosition)
