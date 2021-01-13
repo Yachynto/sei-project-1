@@ -176,11 +176,13 @@ function init() {
   //     cells[virus.currentIndex].classList.remove('virus')
   //   })
   // }
+  
   function removePlayer(playerPosition) {
     cells[playerPosition].classList.remove('player') 
     cells[playerPosition].classList.remove('playerLeft') 
     cells[playerPosition].classList.remove('playerRight') 
   }
+
   function removeSpray() {
     cells[shotPosition].classList.remove('shoot')
   }
@@ -258,11 +260,15 @@ function init() {
       console.log(allViruses, 'hidden array')
       clearInterval(timerShoot) // * clear the interval
       return
-    } else if (shotPosition < 9) {
+    } else if (shotPosition <= 9) {
       removeSpray()
       clearInterval(timerShoot)
     }
     cells[shotPosition].classList.add('shoot')
+    if (shotPosition <= 9 && !cells[shotPosition].classList.contains('virus')) {
+      console.log('nowhere to go, deleting shot')
+      removeSpray()
+    }
   }
   
   function shootSpray() {
