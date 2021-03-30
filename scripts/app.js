@@ -31,7 +31,6 @@ function init() {
     const cell = document.createElement('div')
     grid.appendChild(cell)
     cell.setAttribute('id', i)
-    
   }
 
   function createLeftHalfMask () {
@@ -47,6 +46,16 @@ function init() {
   }
 
   const cells = Array.from(document.querySelectorAll('.grid div'))
+
+  function startGameSheet() {
+    endGameDiv.classList.add('endGameDiv')
+    lostText.innerHTML = "Ready to cure the world? Be Safe! Controls: 'A' and 'D' for Left and Right, 'W' to shoot"
+    document.querySelector('#youCured').style.display = 'none'
+    document.querySelector('#the').style.display = 'none'
+    document.querySelector('#pandemic').style.display = 'none'
+    document.querySelector('#gameOverPic').style.display = 'none'
+  }
+  startGameSheet()
 
   createLeftHalfMask()
   createRightHalfMask()
@@ -266,6 +275,12 @@ function init() {
   }
   
   //* Start Game, Victory and End Game stuff
+  function startButtonStuffHide() {
+    startButtonDisappear()
+    endGameDiv.classList.remove('endGameDiv')
+    startGame()
+  }
+
   function startGame() {
     moveVirusesTimer()
     playBase()
@@ -284,7 +299,8 @@ function init() {
   
   function endGameSheet() {
     endGameDiv.classList.add('endGameDiv')
-    lostText.innerHTML = `You lost! Your highest score is ${score} points!`
+    document.querySelector('#gameOverPic').style.display = 'block'
+    lostText.innerHTML = `You got infected! Your highest score is ${score} points!`
     document.querySelector('#youCured').removeAttribute('id')
     document.querySelector('#the').removeAttribute('id')
     document.querySelector('#pandemic').removeAttribute('id')
@@ -293,13 +309,16 @@ function init() {
   function winGameSheet() {
     endGameDiv.classList.add('endGameDiv')
     document.querySelector('#gameOverPic').removeAttribute('id')
+    document.querySelector('#youCured').style.display = 'block'
+    document.querySelector('#the').style.display = 'block'
+    document.querySelector('#pandemic').style.display = 'block'
   }
   
   function startButtonDisappear() {
     startButton.style.display = 'none'
   }
 
-  startButton.addEventListener('click', startGame)
+  startButton.addEventListener('click', startButtonStuffHide)
 
 
 
