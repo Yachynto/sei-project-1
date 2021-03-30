@@ -10,25 +10,49 @@ function init() {
   const lostText = document.querySelector('#lostText')
   const baseSound = document.querySelector('#baseSound')
   const victoryAudio = document.querySelector('#victoryAudio')
-
+  
   //* Variables
   const width = 10
-  const cells = []
+  const gridCells = width * width
   const maskLeftHalf = [72, 76]
   const maskRightHalf = [ 73, 77]
-  const gridCells = width * width
-  const virusPosition = null
-  const vaccinePosition = 62
-  // let allViruses = [0, 1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 20, 21, 22, 23, 24, 25, 26]
-  let score = 0
-  let playerPosition = 94
-  let shotPosition 
-  const sneezePosition = virusPosition
+  let sprayPosition = 94
+  let sprayDirection
+  let shotPosition
   let movingRight = true
-  const allShots = []
-  let playerDirection
+  let score = 0
   let virusId
-  let timerShoot
+  //* initially at 750
+  let timerTime = 500
+
+  //* Scenario
+  
+  for (let i = 0; i < gridCells; i++) {
+    const cell = document.createElement('div')
+    grid.appendChild(cell)
+    cell.setAttribute('id', i)
+    
+  }
+
+  function createLeftHalfMask () {
+    maskLeftHalf.forEach(mask => {
+      return cells[mask].classList.add('leftMask')
+    })
+  }
+
+  function createRightHalfMask() {
+    maskRightHalf.forEach(mask => {
+      return cells[mask].classList.add('rightMask')
+    })
+  }
+
+  const cells = Array.from(document.querySelectorAll('.grid div'))
+
+  createLeftHalfMask()
+  createRightHalfMask()
+
+  //* Viruses spawn
+
   let allViruses = [
     { currentIndex: 1, isAlive: true },
     { currentIndex: 2, isAlive: true },
@@ -47,63 +71,6 @@ function init() {
     { currentIndex: 25, isAlive: true }
   ]
 
-  //* Scenario
-  function createGrid() {
-    for (let i = 0; i < gridCells; i++) {
-      const cell = document.createElement('div')
-      cell.setAttribute('id', i)
-      cells.push(cell)
-      grid.appendChild(cell)
-    }
-    createLeftHalfMask()
-    createRightHalfMask()
-    // masksDom()
-  }
-  createGrid()
-
-  function createLeftHalfMask () {
-    maskLeftHalf.forEach(mask => {
-      return cells[mask].classList.add('leftMask')
-    })
-  }
-
-  function createRightHalfMask() {
-    maskRightHalf.forEach(mask => {
-      return cells[mask].classList.add('rightMask')
-    })
-  }
-  // function masksDom() {
-  //   const firstMask = document.getElementById('71')
-  //   const secondMask = document.getElementById('72')
-  //   const thirdMask = document.getElementById('74')
-  //   const fourthMask = document.getElementById('75')
-  //   const fifthMask = document.getElementById('77')
-  //   const sixthMask = document.getElementById('78')
-  //   const firstPair = firstMask + secondMask
-  //   const secondPair = thirdMask + fourthMask
-  //   const thirdPair = fifthMask + sixthMask
-  //   cells[firstPair].classList.add('mask')
-  //   cells[secondPair].classList.add('mask')
-  //   cells[thirdPair].classList.add('mask')
-  // }
-
-  //* Viruses Spawns, Movement and Sneeze
-  // function addVaccine(vaccinePosition) {
-  //   cells[vaccinePosition].classList.add('vaccine')
-  // }
-  // addVaccine(vaccinePosition)
-  // function addViruses(virusPosition) {
-  //   for (let i = virusPosition; i < 7; i++) {
-  //     cells[virusPosition + i].classList.add('virus')
-  //     for (let j = i; j < 40; j += 10) {
-  //       cells[virusPosition + j].classList.add('virus')
-  //       allViruses.push(j)
-  //     }
-  //   }
-  //   moveViruses()
-  // }
-  // addViruses(virusPosition)
-
   function addViruses() {
     allViruses.forEach(virus => {
       if (virus.isAlive) {
@@ -113,15 +80,55 @@ function init() {
   }
   addViruses()
 
+  //* Spray spawn
+
+  function addSpray(sprayPosition) {
+    if (sprayDirection === 'right') {
+      return cells[sprayPosition].classList.add('sprayRight')
+    } else if (sprayDirection === 'left') {
+      return cells[sprayPosition].classList.add('sprayLeft')
+    }
+  }
+
+  cells[sprayPosition].classList.add('spray')
+
+  function removeSpray(sprayPosition) {
+    cells[sprayPosition].classList.remove('spray') 
+    cells[sprayPosition].classList.remove('sprayLeft') 
+    cells[sprayPosition].classList.remove('sprayRight') 
+  }
+
+  function moveSpray(event) {
+    removeSpray(sprayPosition)
+    const x = sprayPosition % width
+    switch (event.keyCode) {
+      case 68: //* Going Right
+        if (x < width - 1) sprayPosition++
+        cells[sprayPosition].classList.add('sprayRight')
+        sprayDirection = 'right'
+        break
+      case 65: //* Going Left
+        if (x > 0) sprayPosition--
+        cells[sprayPosition].classList.add('sprayLeft')
+        sprayDirection = 'left'
+        break
+      default:
+    }
+    addSpray(sprayPosition)
+  }
+  document.addEventListener('keydown', moveSpray)
+
+  //* Move Viruses
+
   function moveViruses() {
     const finalVirusIndex = movingRight ? allViruses[allViruses.length - 1].currentIndex : allViruses[0].currentIndex
     const x = finalVirusIndex % width 
     const y = Math.ceil(finalVirusIndex / width)
     if (finalVirusIndex === 89) {
-      console.log(y, 'y position')
-      playEndGameAudio()
-      clearInterval(virusId)  //* If viruses hit bottom, END GAME!
+      console.log(y, 'y position Last Virus')
       endGameSheet()
+      clearInterval(virusId)  //* If viruses hit bottom, END GAME!
+      playEndGameAudio()
       startButtonDisappear()
       baseSound.pause()
       // window.alert(`You lost! Your highest score is ${score} points!`)
@@ -131,6 +138,10 @@ function init() {
           ...virus, currentIndex: virus.currentIndex + width
         }
       })
+      console.log('going down')
+      clearInterval(virusId)
+      moveVirusesTimer()
+      timerSpeedUp()
       movingRight = !movingRight
     } else if (movingRight) { //* moving right
       allViruses = allViruses.map(virus => {
@@ -153,84 +164,70 @@ function init() {
       removeViruses()
       moveViruses()
       addViruses()
-    }, 750)
+    }, timerTime)
   }
-  
-  // function sneeze() {
-  //   addSneeze()
-  //   sneezePosition + 30
-  // }
-  // sneeze()
-  // function addSneeze(sneezePosition) {
-  //   cells[sneezePosition].classList.add('sneeze')
-  // }
+  // moveVirusesTimer()
 
-  //* Remove Functions
+  function timerSpeedUp() {
+    timerTime -= 70
+    console.log('increasing speed', timerTime)
+  }
+
   function removeViruses() {
     allViruses.forEach(virus => {
       return cells[virus.currentIndex].classList.remove('virus')
     })
   }
-  // function removeAllViruses() {
-  //   allViruses.forEach(virus => {
-  //     cells[virus.currentIndex].classList.remove('virus')
-  //   })
-  // }
-  
-  function removePlayer(playerPosition) {
-    cells[playerPosition].classList.remove('player') 
-    cells[playerPosition].classList.remove('playerLeft') 
-    cells[playerPosition].classList.remove('playerRight') 
-  }
 
-  function removeSpray() {
-    cells[shotPosition].classList.remove('shoot')
-  }
-  // function removeSneeze() {
-  //   cells[sneezePosition].classList.remove('sneeze') 
-  // }
+  //* Shoot spray
 
-  //* Player Classes
-  function addStartPlayer(playerPosition) {
-    cells[playerPosition].classList.add('player')
-  }
-  addStartPlayer(playerPosition)
+  function shootSpray(event) {
+    let shotId
+    let shotPosition = sprayPosition
+    function moveShot() {
+      cells[shotPosition].classList.remove('shot')
+      shotPosition -= width
+      cells[shotPosition].classList.add('shot')
 
-  function addPlayer(playerPosition) { //? Tried to keep the class of player not changing while shooting
-    if (playerDirection === 'right') {
-      return cells[playerPosition].classList.add('playerRight')
-    } else if (playerDirection === 'left') {
-      return cells[playerPosition].classList.add('playerLeft')
+      if (cells[shotPosition].classList.contains('virus')) {
+        console.log('collision at', shotPosition)
+        scoring()
+        const hitVirus = allViruses.find(virus => {
+          return virus.currentIndex === shotPosition
+        })
+        allViruses = allViruses.filter(virus => { //* Remove the object from array
+          return virus.isAlive === true
+        })
+        console.log('hitVirus', hitVirus)
+        hitVirus.isAlive = !hitVirus.isAlive
+        cells[shotPosition].classList.remove('virus')
+        cells[shotPosition].classList.remove('shot')
+        cells[shotPosition].classList.add('virusDead')
+        setTimeout(() => cells[shotPosition].classList.remove('virusDead'), 200)
+        console.log('starting array', allViruses)
+        console.log('hidden array', allViruses)
+        clearInterval(shotId) // * clear the interval
+        return
+      } else if (shotPosition <= 9) {
+        cells[shotPosition].classList.remove('shot')
+        clearInterval(shotId)
+      }
+      cells[shotPosition].classList.add('shoot')
+      if (shotPosition <= 9 && !cells[shotPosition].classList.contains('virus')) {
+        console.log('nowhere to go, deleting shot')
+        cells[shotPosition].classList.remove('shot')
+      }
+
     }
-    //   console.log("It's already showing left, do nothing")
-    // } else if (cells[playerPosition].classList.contains('playerRight')) {
-    //   console.log('showing right, do nothing')
-    // }
+    switch (event.keyCode) {
+      case 87: //* Shoot with W
+        playSpray()
+        shotId = setInterval(moveShot, 100)
+        addSpray(sprayPosition)
+    }
+    addSpray(sprayPosition)
   }
-
-  //* Shoot Functions
-  // function handleShoot() {
-  //   if (cells[shotPosition].classList.contains('virus')) {
-  //     const hitVirus = allViruses.find(virus => {
-  //       virus.currentIndex === shotPosition
-  //     })
-  //     console.log(hitVirus, 'hitVirus')
-  //     hitVirus.isAlive = !hitVirus.isAlive
-  //     console.log(allViruses, 'all viruses')
-  //     console.log(shotPosition, 'shot')
-  //     removeSpray()
-  //     removeVirus()
-  //     clearInterval(timerShoot)
-  //   } 
-  // else if (shotPosition % width === 0) {
-  //   removeShoot()
-  //   clearInterval(timerShoot)
-  // }
-  // allShots.forEach(shot => {
-  //   allShots.push(shotPosition)
-  //   console.log(allShots)
-  // })
-  // }
+  document.addEventListener('keydown', shootSpray)
 
   //* Register Score
   function scoring() {
@@ -241,100 +238,31 @@ function init() {
     }
   }
 
-  //* Player Shoots
-  function addSpray() {
-    if (cells[shotPosition].classList.contains('virus')) {
-      console.log('collison')
-      console.log('shotPosition', shotPosition)
-      scoring()
-      const hitVirus = allViruses.find(virus => {
-        return virus.currentIndex === shotPosition
-      })
-      allViruses = allViruses.filter(virus => { //* Remove the object from array
-        return virus.isAlive === true
-      })
-      console.log('hitVirus', hitVirus)
-      hitVirus.isAlive = !hitVirus.isAlive
-      cells[shotPosition].classList.remove('virus')
-      console.log(allViruses, 'starting array')
-      console.log(allViruses, 'hidden array')
-      clearInterval(timerShoot) // * clear the interval
-      return
-    } else if (shotPosition <= 9) {
-      removeSpray()
-      clearInterval(timerShoot)
-    }
-    cells[shotPosition].classList.add('shoot')
-    if (shotPosition <= 9 && !cells[shotPosition].classList.contains('virus')) {
-      console.log('nowhere to go, deleting shot')
-      removeSpray()
-    }
-  }
-  
-  function shootSpray() {
-    clearInterval(timerShoot)
-    shotPosition = playerPosition
-    timerShoot = setInterval(() => {
-      removeSpray()
-      shotPosition -= 10
-      addSpray()
-      console.log('Shooting timer updates')
-    }, 100)
-    console.log('Shot start')
-  }
-
-  //* Player Movement and shoot case in switch
-  function movement(event) {
-    removePlayer(playerPosition)
-    const x = playerPosition % width
-    switch (event.keyCode) {
-      case 68: //* Going Right
-        if (x < width - 1) playerPosition++
-        cells[playerPosition].classList.add('playerRight')
-        playerDirection = 'right'
-        shotPosition = playerPosition
-        break
-      case 65: //* Going Left
-        if (x > 0) playerPosition--
-        cells[playerPosition].classList.add('playerLeft')
-        playerDirection = 'left'
-        shotPosition = playerPosition
-        break
-      case 87: //* Shoot with W
-        shootSpray()
-        playSpray()
-        addPlayer(playerPosition)
-        //? Start game with spacebar not possible, due to loop baseSound
-        break
-      default:
-    }
-    addPlayer(playerPosition)
-  }
-  
   //* Sounds
+
   function playSpray() {
     sprayAudio.src = 'styles/Sounds/Spray Sound.mp3'
     sprayAudio.play()
-    console.log('Playing')
+    // console.log('Playing')
   }
 
   function playEndGameAudio() {
     endGameAudio.src = 'styles/Sounds/End Game Cough.mp3'
     endGameAudio.play()
-    console.log('Playing endGame')
+    // console.log('Playing endGame')
   }
 
   function playBase() {
     baseSound.src = 'styles/Sounds/One Minute To Midnight.mp3'
     baseSound.volume = 0.1
     baseSound.play()
-    console.log('Playing Base')
+    // console.log('Playing Base')
   }
 
   function playVictory() {
     victoryAudio.src = 'styles/Sounds/victory sound.wav'
     victoryAudio.play()
-    console.log('playing victory')
+    // console.log('playing victory')
   }
   
   //* Start Game, Victory and End Game stuff
@@ -342,7 +270,6 @@ function init() {
     moveVirusesTimer()
     playBase()
   }
-  
   function winGame() {
     clearInterval(virusId)
     endGameDiv.classList.add('endGameDiv')
@@ -352,7 +279,7 @@ function init() {
     playVictory()
     // window.alert('You Won')
   }
-  
+
   //! End Game inside moveViruses()
   
   function endGameSheet() {
@@ -371,14 +298,14 @@ function init() {
   function startButtonDisappear() {
     startButton.style.display = 'none'
   }
-  
-  
-  
-  
-  
-  
+
   startButton.addEventListener('click', startGame)
-  document.addEventListener('keydown', movement)
+
+
+
+
+
+
 
 
 
