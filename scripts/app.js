@@ -133,7 +133,7 @@ function init() {
     const finalVirusIndex = movingRight ? allViruses[allViruses.length - 1].currentIndex : allViruses[0].currentIndex
     const x = finalVirusIndex % width 
     const y = Math.ceil(finalVirusIndex / width)
-    if (finalVirusIndex === 89) {
+    if (finalVirusIndex >= 89) {
       console.log(y, 'y position Last Virus')
       endGameSheet()
       clearInterval(virusId)  //* If viruses hit bottom, END GAME!
